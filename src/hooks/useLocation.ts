@@ -1,15 +1,15 @@
 // src/hooks/useLocation.ts - FIXED VERSION
 import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store/store';
+import { AppDispatch, RootState } from '@/store';
 import {
   updateCurrentLocation,
   startLocationTracking,
   stopLocationTracking,
   fetchNearbyUsers
-} from '../store/slices/locationSlice';
+} from '@/store/slices/locationSlice';
 import { UserLocation, LocationPermission } from "@/types";
-import { requestLocationPermission } from '../utils/permissions';
+import { requestLocationPermission } from '@/utils/permissions';
 
 export const useLocation = () => {
   const dispatch = useDispatch<AppDispatch>();

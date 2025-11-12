@@ -1,4 +1,3 @@
-// src/store/store.ts - UPDATED VERSION
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,19 +5,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import authSlice from './slices/authSlice';
 import locationSlice from './slices/locationSlice';
 import userSlice from './slices/userSlice';
-import mapSlice from './slices/mapSlice'; // ADDED: Import mapSlice
+import mapSlice from './slices/mapSlice';
 
 const persistConfig = {
-key: 'root',
-storage: AsyncStorage,
-whitelist: ['auth', 'user'], // Don't persist map and location data
+  key: 'root',
+  storage: AsyncStorage,
+  whitelist: ['auth', 'user'],
 };
 
 const rootReducer = combineReducers({
-auth: authSlice,
-location: locationSlice,
-user: userSlice,
-map: mapSlice, // ADDED: Include mapSlice
+  auth: authSlice,
+  location: locationSlice,
+  user: userSlice,
+  map: mapSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
