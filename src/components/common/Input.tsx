@@ -15,6 +15,9 @@ interface InputProps extends TextInputProps {
   error?: string;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
+  testID?: string;
+  accessibilityLabel?: string;
+  isPassword?: boolean;
 }
 
 /**
@@ -25,6 +28,9 @@ export const Input: React.FC<InputProps> = ({
                                               error,
                                               containerStyle,
                                               inputStyle,
+                                              isPassword,
+                                              testID,
+                                              accessibilityLabel,
                                               style, // Destructure to prevent passing it to the root View
                                               ...textInputProps
                                             }) => {
@@ -34,14 +40,19 @@ export const Input: React.FC<InputProps> = ({
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
-        // FIX: Removed invalid escaped quotes and used a constant for the color.
         placeholderTextColor="#999"
         style={[
           styles.input,
-          // REFACTOR: Apply error style conditionally for better readability.
           hasError && styles.inputError,
           inputStyle,
         ]}
+        secureTextEntry={isPassword || textInputProps.secureTextEntry}
+        textContentType={isPassword ? 'password' : textInputProps.textContentType}
+        autoComplete={isPassword ? 'password' : textInputProps.autoComplete}
+        accessibilityLabel={accessibilityLabel || label}
+        testID={testID}
+        returnKeyType={textInputProps.returnKeyType || 'done'}
+        blurOnSubmit={textInputProps.blurOnSubmit ?? true}
         {...textInputProps}
       />
       {hasError && <Text style={styles.errorText}>{error}</Text>}

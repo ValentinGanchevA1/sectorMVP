@@ -26,42 +26,18 @@ class ErrorHandler {
     return ErrorHandler.instance;
   }
 
-  /**
-   * Handle and log errors consistently across the app
-   */
   handleError(error: any, context?: string): AppError {
     const appError: AppError = this.normalizeError(error, context);
-
-    // Log error (replace with your preferred logging service)
-    console.error(`[${appError.code}] ${appError.message}`, {
-      context: appError.context,
-      stack: appError.stack,
-    });
-
-    // Report to crash analytics in production (e.g., Crashlytics)
-    if (!__DEV__) {
-      // TODO: Add crash reporting service
-      // crashlytics().recordError(new Error(appError.message));
-    }
-
     return appError;
   }
 
-  /**
-   * Show user-friendly error messages
-   */
   showUserError(error: any, title: string = 'Error'): void {
     const appError = this.handleError(error);
     const userMessage = this.getUserFriendlyMessage(appError);
-
     Alert.alert(title, userMessage);
   }
 
-  /**
-   * Normalize different error types into consistent format
-   */
   private normalizeError(error: any, context?: string): AppError {
-    // Handle axios/network errors
     if (error.response) {
       return {
         code: ErrorCodes.NETWORK_ERROR,
@@ -75,7 +51,6 @@ class ErrorHandler {
       };
     }
 
-    // Handle Auth errors
     if (error.message?.includes('auth') || error.code === 'auth/') {
       return {
         code: ErrorCodes.AUTH_ERROR,
@@ -85,8 +60,7 @@ class ErrorHandler {
       };
     }
 
-    // Handle location errors
-    if (error.code >= 1 && error.code <= 5) { // Geolocation error codes
+    if (error.code >= 1 && error.code <= 5) {
       return {
         code: ErrorCodes.LOCATION_ERROR,
         message: this.getLocationErrorMessage(error.code),
@@ -95,7 +69,6 @@ class ErrorHandler {
       };
     }
 
-    // Handle validation errors
     if (error.name === 'ValidationError') {
       return {
         code: ErrorCodes.VALIDATION_ERROR,
@@ -105,7 +78,6 @@ class ErrorHandler {
       };
     }
 
-    // Default error
     return {
       code: ErrorCodes.UNKNOWN_ERROR,
       message: error.message || 'An unexpected error occurred',
@@ -114,31 +86,21 @@ class ErrorHandler {
     };
   }
 
-  /**
-   * Convert technical errors to user-friendly messages
-   */
   private getUserFriendlyMessage(error: AppError): string {
     switch (error.code) {
       case ErrorCodes.NETWORK_ERROR:
         return 'Please check your internet connection and try again.';
-
       case ErrorCodes.AUTH_ERROR:
         return 'Please log in again to continue.';
-
       case ErrorCodes.LOCATION_ERROR:
         return 'Unable to access your location. Please check your location settings.';
-
       case ErrorCodes.VALIDATION_ERROR:
-        return error.message; // Validation messages are usually user-friendly
-
+        return error.message;
       default:
         return 'Something went wrong. Please try again.';
     }
   }
 
-  /**
-   * Get specific location error messages
-   */
   private getLocationErrorMessage(code: number): string {
     switch (code) {
       case 1: return 'Location access denied';

@@ -37,11 +37,6 @@ const NotificationsScreen: React.FC = () => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      // TODO: Fetch from API
-      // const response = await apiClient.get('/notifications');
-      // setNotifications(response.data);
-
-      // Mock data for now
       const mockNotifications: Notification[] = [
         {
           id: '1',
@@ -79,10 +74,7 @@ const NotificationsScreen: React.FC = () => {
           read: true,
         },
       ];
-
       setNotifications(mockNotifications);
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
     } finally {
       setLoading(false);
     }
@@ -95,18 +87,13 @@ const NotificationsScreen: React.FC = () => {
   };
 
   const handleNotificationPress = (notification: Notification) => {
-    // Mark as read
     setNotifications(prev =>
       prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
     );
-
-    // TODO: Navigate based on notification type
-    console.log('Notification pressed:', notification);
   };
 
   const handleMarkAllRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    // TODO: API call to mark all as read
   };
 
   const getNotificationIcon = (type: Notification['type']): string => {
@@ -159,32 +146,30 @@ const NotificationsScreen: React.FC = () => {
         padding="medium"
       >
         <View style={styles.notificationContent}>
-          {/* Icon or Avatar */}
           <View style={styles.iconContainer}>
-            {item.avatarUri || item.userName ? (
-              <Avatar
-                imageUri={item.avatarUri}
-                name={item.userName}
-                size="medium"
+          {item.avatarUri || item.userName ? (
+            <Avatar
+              imageUri={item.avatarUri}
+              name={item.userName}
+              size="medium"
+            />
+          ) : (
+            <View
+              style={[
+                styles.iconCircle,
+                { backgroundColor: getNotificationColor(item.type) + '20' },
+              ]}
+            >
+              <Icon
+                name={getNotificationIcon(item.type)}
+                size={24}
+                color={getNotificationColor(item.type)}
               />
-            ) : (
-              <View
-                style={[
-                  styles.iconCircle,
-                  { backgroundColor: getNotificationColor(item.type) + '20' },
-                ]}
-              >
-                <Icon
-                  name={getNotificationIcon(item.type)}
-                  size={24}
-                  color={getNotificationColor(item.type)}
-                />
-              </View>
-            )}
-          </View>
+            </View>
+          )}
+        </View>
 
-          {/* Content */}
-          <View style={styles.textContent}>
+        <View style={styles.textContent}>
             <View style={styles.titleRow}>
               <Text
                 style={[

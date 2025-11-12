@@ -1,7 +1,7 @@
 // src/services/api.ts - PRODUCTION READY VERSION
 import axios, { AxiosInstance, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios';
-import { store } from '../store/store';
-import { logout } from '../store/slices/authSlice';
+import { store } from '@/store';
+import { logout } from '@/store/slices/authSlice';
 import { errorHandler, ErrorCodes } from './errorHandler';
 import { AppConfig } from '../config/app';
 
@@ -49,45 +49,28 @@ class ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
-        // Add auth token
         const token = store.getState().auth.token;
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
         }
 
-        // Add request ID for tracking and deduplication
         const requestId = this.generateRequestId(config);
         if (config.headers) {
           config.headers['X-Request-ID'] = requestId;
         }
 
-        // Add timestamp
         if (config.headers) {
           config.headers['X-Request-Time'] = Date.now().toString();
         }
 
-        console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`, {
-          params: config.params,
-          data: config.data,
-        });
-
         return config;
       },
-      (error) => {
-        console.error('[API] Request error:', error);
-        return Promise.reject(error);
-      }
+      (error) => Promise.reject(error)
     );
 
     // Response interceptor
     this.client.interceptors.response.use(
       (response: AxiosResponse<ApiResponse>) => {
-        console.log(`[API] Response: ${response.config.url}`, {
-          status: response.status,
-          data: response.data,
-        });
-
-        // Transform to consistent format
         return {
           ...response,
           data: response.data.data !== undefined ? response.data.data : response.data,
@@ -102,9 +85,7 @@ class ApiClient {
   private async handleResponseError(error: AxiosError): Promise<any> {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
 
-    // Handle network errors
     if (!error.response) {
-      console.error('[API] Network error:', error.message);
       const handledError = errorHandler.handleError(
         { code: ErrorCodes.NETWORK_ERROR, message: 'Network error. Please check your connection.' },
         'API Network'
@@ -112,22 +93,15 @@ class ApiClient {
       return Promise.reject(handledError);
     }
 
-    // Handle 401 - Unauthorized (Token expired)
     if (error.response.status === 401 && !originalRequest._retry) {
       if (originalRequest.url?.includes('/auth/refresh')) {
-        // Refresh token itself failed, logout
-        console.warn('[API] Refresh token failed, logging out');
         store.dispatch(logout());
         return Promise.reject(error);
       }
-
-      // Attempt to refresh token
       return this.handleTokenRefresh(originalRequest, error);
     }
 
-    // Handle 403 - Forbidden
     if (error.response.status === 403) {
-      console.warn('[API] Access forbidden:', error.response.data);
       const handledError = errorHandler.handleError(
         { code: ErrorCodes.AUTH_ERROR, message: 'Access denied' },
         'API Forbidden'
@@ -135,14 +109,7 @@ class ApiClient {
       return Promise.reject(handledError);
     }
 
-    // Handle 404 - Not Found
-    if (error.response.status === 404) {
-      console.warn('[API] Resource not found:', originalRequest.url);
-    }
-
-    // Handle 429 - Rate Limited
     if (error.response.status === 429) {
-      console.warn('[API] Rate limited');
       const handledError = errorHandler.handleError(
         { code: ErrorCodes.NETWORK_ERROR, message: 'Too many requests. Please try again later.' },
         'API Rate Limit'
@@ -150,9 +117,7 @@ class ApiClient {
       return Promise.reject(handledError);
     }
 
-    // Handle 500+ - Server errors
     if (error.response.status >= 500) {
-      console.error('[API] Server error:', error.response.status);
       const handledError = errorHandler.handleError(
         { code: ErrorCodes.NETWORK_ERROR, message: 'Server error. Please try again.' },
         'API Server Error'
@@ -160,8 +125,6 @@ class ApiClient {
       return Promise.reject(handledError);
     }
 
-    // Handle other errors
-    console.error('[API] Response error:', error.response.status, error.response.data);
     const handledError = errorHandler.handleError(error, 'API Response');
     return Promise.reject(handledError);
   }
@@ -171,14 +134,10 @@ class ApiClient {
     error: AxiosError
   ): Promise<any> {
     if (this.isRefreshing) {
-      // Queue the request while refresh is in progress
       return new Promise((resolve, reject) => {
         this.failedQueue.push({ resolve, reject });
-      }).then(() => {
-        return this.client(originalRequest);
-      }).catch(err => {
-        return Promise.reject(err);
-      });
+      }).then(() => this.client(originalRequest))
+        .catch(err => Promise.reject(err));
     }
 
     originalRequest._retry = true;
@@ -199,7 +158,6 @@ class ApiClient {
 
   private async refreshToken(): Promise<void> {
     try {
-      console.log('[API] Refreshing token...');
       const response = await axios.post<RefreshTokenResponse>(
         `${AppConfig.API_BASE_URL}/auth/refresh`,
         {},
@@ -209,13 +167,7 @@ class ApiClient {
           },
         }
       );
-
-      // TODO: Dispatch action to update token in Redux
-      // store.dispatch(setToken(response.data.token));
-
-      console.log('[API] Token refreshed successfully');
     } catch (error) {
-      console.error('[API] Token refresh failed:', error);
       throw error;
     }
   }
@@ -349,27 +301,16 @@ class ApiClient {
     }
   }
 
-  /**
-   * Cancel all pending requests
-   */
   public cancelAllRequests(): void {
     this.requestMap.clear();
-    console.log('[API] All pending requests cancelled');
   }
 
-  /**
-   * Get current base URL
-   */
   public getBaseUrl(): string {
     return this.client.defaults.baseURL || '';
   }
 
-  /**
-   * Update base URL (useful for switching environments)
-   */
   public setBaseUrl(baseUrl: string): void {
     this.client.defaults.baseURL = baseUrl;
-    console.log('[API] Base URL updated:', baseUrl);
   }
 }
 

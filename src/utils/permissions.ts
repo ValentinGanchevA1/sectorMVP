@@ -24,13 +24,11 @@ const requestAndroidLocationPermission = async (): Promise<LocationPermission> =
       }
     );
 
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      return { granted: true, type: 'whenInUse' };
-    } else {
-      return { granted: false, type: 'denied' };
-    }
-  } catch (err) {
-    console.error('Location permission error:', err);
+    return {
+      granted: granted === PermissionsAndroid.RESULTS.GRANTED,
+      type: granted === PermissionsAndroid.RESULTS.GRANTED ? 'whenInUse' : 'denied'
+    };
+  } catch {
     return { granted: false, type: 'denied' };
   }
 };
@@ -39,26 +37,23 @@ const requestIOSLocationPermission = async (): Promise<LocationPermission> => {
   try {
     const result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
 
-    switch (result) {
-      case RESULTS.GRANTED:
-        return { granted: true, type: 'whenInUse' };
-      case RESULTS.DENIED:
-        return { granted: false, type: 'denied' };
-      case RESULTS.BLOCKED:
-        Alert.alert(
-          'Location Permission Required',
-          'Please enable location access in Settings',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Settings', onPress: () => Linking.openSettings() },
-          ]
-        );
-        return { granted: false, type: 'denied' };
-      default:
-        return { granted: false, type: 'denied' };
+    if (result === RESULTS.GRANTED) {
+      return { granted: true, type: 'whenInUse' };
     }
-  } catch (err) {
-    console.error('iOS location permission error:', err);
+
+    if (result === RESULTS.BLOCKED) {
+      Alert.alert(
+        'Location Permission Required',
+        'Please enable location access in Settings',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Settings', onPress: () => Linking.openSettings() },
+        ]
+      );
+    }
+
+    return { granted: false, type: 'denied' };
+  } catch {
     return { granted: false, type: 'denied' };
   }
 };
