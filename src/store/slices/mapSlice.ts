@@ -4,44 +4,44 @@ import { Region } from 'react-native-maps';
 
 // Types for map-specific data
 interface NearbyUser {
-id: string;
-displayName: string; // FIXED: Changed from username to match MapScreen usage
-latitude: number;
-longitude: number;
-distance: number;
-profileImage?: string;
+  id: string;
+  username: string;
+  latitude: number;
+  longitude: number;
+  distance: number;
+  profileImage?: string;
 }
 
 interface NearbyProduct {
-id: string;
-name: string;
-price: number;
-latitude: number;
-longitude: number;
-distance: number;
-imageUrl?: string;
+  id: string;
+  name: string;
+  price: number;
+  latitude: number;
+  longitude: number;
+  distance: number;
+  imageUrl?: string;
 }
 
 interface MapState {
-region: Region | null;
-nearbyUsers: NearbyUser[];
-nearbyProducts: NearbyProduct[];
-isLoading: boolean;
-error: string | null;
+  region: Region | null;
+  nearbyUsers: NearbyUser[];
+  nearbyProducts: NearbyProduct[];
+  isLoading: boolean;
+  error: string | null;
 }
 
 const initialState: MapState = {
-region: null,
-nearbyUsers: [],
-nearbyProducts: [],
-isLoading: false,
-error: null,
+  region: null,
+  nearbyUsers: [],
+  nearbyProducts: [],
+  isLoading: false,
+  error: null,
 };
 
 // Async thunk for fetching nearby data
 export const fetchNearbyData = createAsyncThunk(
-'map/fetchNearbyData',
-async (params: { latitude: number; longitude: number; radius: number }) => {
+  'map/fetchNearbyData',
+  async (params: { latitude: number; longitude: number; radius: number }) => {
     // This would typically call your API
     // For now, return mock data
     return {

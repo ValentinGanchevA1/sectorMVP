@@ -1,12 +1,12 @@
-// src/types/index.ts - FIXED VERSION
+/ src/types/index.ts - FIXED VERSION
 // =================================================================
 // Core Data Models
 // =================================================================
 
 export interface UserProfile {
-    bio?: string;
-interests?: string[];
-lookingFor?: ('dating' | 'friendship' | 'trading' | 'events')[];
+  bio?: string;
+  interests?: string[];
+  lookingFor?: ('dating' | 'friendship' | 'trading' | 'events')[];
   ageMin?: number;
   ageMax?: number;
   maxDistance?: number;

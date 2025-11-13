@@ -4,19 +4,19 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { registerUser, clearError } from '@/store/slices/authSlice';
+import { signupUser, clearError } from '@/store/slices/authSlice';
 import { AuthStackNavigationProp } from '@/types/navigation';
 import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 
-const SignupScreen: React.FC = () => {
+export const SignupScreen: React.FC = () => {
   type SignupNavigationProp = AuthStackNavigationProp<'Signup'>;
   const navigation = useNavigation<SignupNavigationProp>();
   const dispatch = useAppDispatch();
@@ -33,17 +33,16 @@ const SignupScreen: React.FC = () => {
     if (username && email && password) {
       try {
         const result = await dispatch(
-          registerUser({ username, email, password }),
+          signupUser({ phoneNumber: username, displayName: username, dateOfBirth: new Date() }),
         ).unwrap();
 
-        // On success, the RootNavigator will handle the switch to the Main stack.
-        // If the user is new (which they always will be on signup),
-        // navigate them to complete their profile.
-        if (result.isNewUser) {
+        // On success, navigate new users to profile setup.
+        const isNew = Boolean((result as any)?.isNewUser);
+        if (isNew) {
           navigation.navigate('ProfileSetup');
         }
-      } catch (rejectedValue) {
-        Alert.alert('Signup Failed', rejectedValue as string);
+      } catch (error_) {
+        Alert.alert('Signup Failed', error_ as string);
       }
     }
   };
@@ -148,5 +147,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-
-export default SignupScreen;

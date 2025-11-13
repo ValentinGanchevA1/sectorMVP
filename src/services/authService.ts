@@ -3,18 +3,18 @@ import { apiClient } from './api';
 import { LoginCredentials, SignupData, AuthResponse } from '@/types';
 
 export const authService = {
-async sendVerificationCode(phoneNumber: string): Promise<{ success: boolean }> {
+  async sendVerificationCode(phoneNumber: string): Promise<{ success: boolean }> {
     const response = await apiClient.post('/auth/send-code', { phoneNumber });
     return response.data;
   },
 
-  // Return consistent AuthResponse interface
+  // FIXED: Return consistent AuthResponse interface
   async loginWithPhone(credentials: LoginCredentials): Promise<{ data: AuthResponse }> {
     const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
     return { data: response.data };
   },
 
-  // Return consistent AuthResponse interface
+  // FIXED: Return consistent AuthResponse interface
   async signup(userData: SignupData): Promise<{ data: AuthResponse }> {
     const response = await apiClient.post<AuthResponse>('/auth/signup', userData);
     return { data: response.data };

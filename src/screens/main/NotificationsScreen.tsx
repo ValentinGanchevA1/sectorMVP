@@ -7,8 +7,8 @@ import {
   FlatList,
   TouchableOpacity,
   RefreshControl,
-  SafeAreaView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Card } from '@/components/common/Card';
 import { Avatar } from '@/components/common/Avatar';
@@ -25,7 +25,7 @@ interface Notification {
   userName?: string;
 }
 
-const NotificationsScreen: React.FC = () => {
+export const NotificationsScreen: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -141,7 +141,7 @@ const NotificationsScreen: React.FC = () => {
       <Card
         style={[
           styles.notificationCard,
-          !item.read && styles.unreadCard,
+          item.read ? undefined : styles.unreadCard,
         ]}
         padding="medium"
       >
@@ -174,12 +174,12 @@ const NotificationsScreen: React.FC = () => {
               <Text
                 style={[
                   styles.notificationTitle,
-                  !item.read && styles.unreadTitle,
+                  item.read ? undefined : styles.unreadTitle,
                 ]}
               >
                 {item.title}
               </Text>
-              {!item.read && <View style={styles.unreadDot} />}
+              {item.read ? null : <View style={styles.unreadDot} />}
             </View>
             <Text style={styles.notificationMessage} numberOfLines={2}>
               {item.message}
@@ -222,7 +222,7 @@ const NotificationsScreen: React.FC = () => {
         {unreadCount > 0 && (
           <View style={styles.unreadBadge}>
             <Text style={styles.unreadBadgeText}>
-              {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+              {unreadCount} unread notification{unreadCount === 1 ? '' : 's'}
             </Text>
           </View>
         )}
@@ -243,7 +243,7 @@ const NotificationsScreen: React.FC = () => {
               tintColor={COLORS.PRIMARY}
             />
           }
-          ListEmptyComponent={!loading ? renderEmptyState : null}
+          ListEmptyComponent={loading ? null : renderEmptyState}
           showsVerticalScrollIndicator={false}
         />
       </View>
@@ -373,5 +373,3 @@ const styles = StyleSheet.create({
     marginTop: SPACING.SM,
   },
 });
-
-export default NotificationsScreen;

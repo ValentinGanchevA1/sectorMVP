@@ -1,4 +1,3 @@
-
 // src/screens/auth/ProfileSetupScreen.tsx
 import React, { useState } from 'react';
 import {
@@ -15,7 +14,6 @@ import { updateUserProfile, uploadProfileImage } from '@/store/slices/userSlice'
 import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import { ImagePicker } from '@/components/common/ImagePicker';
-import { AsyncThunkAction } from '@reduxjs/toolkit';
 
 // Custom hook for unified loading state
 const useLoadingState = () => {
@@ -37,17 +35,20 @@ export const ProfileSetupScreen: React.FC = () => {
       return;
     }
     try {
-      const profileUpdatePromises: AsyncThunkAction<any, any, any>[] = [];
+      // Dispatch synchronous action to update core user immediately
+      dispatch(updateCoreUser({ displayName }));
 
+      // Collect async thunks (which return promise-like results from dispatch)
+      const asyncPromises: Promise<any>[] = [];
       if (profileImageUri) {
-        profileUpdatePromises.push(dispatch(uploadProfileImage(profileImageUri)));
+        asyncPromises.push(dispatch(uploadProfileImage(profileImageUri)) as Promise<any>);
       }
-      profileUpdatePromises.push(dispatch(updateCoreUser({ displayName })));
       if (bio.trim()) {
-        profileUpdatePromises.push(dispatch(updateUserProfile({ bio })));
+        asyncPromises.push(dispatch(updateUserProfile({ bio })) as Promise<any>);
       }
 
-      await Promise.all(profileUpdatePromises.map((p) => p.unwrap()));
+      // Wait for all async thunks to resolve (they expose `unwrap`)
+      await Promise.all(asyncPromises.map((p) => (p as any).unwrap()));
 
       Alert.alert('Profile Saved!', 'Welcome to the app.');
     } catch (error: any) {

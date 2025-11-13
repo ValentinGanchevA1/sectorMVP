@@ -15,6 +15,12 @@ interface ValidatedInputProps {
   [key: string]: any;
 }
 
+// Define the validation result type to match ValidationUtils methods
+interface ValidationResult {
+  isValid: boolean;
+  message?: string;
+}
+
 export const ValidatedInput: React.FC<ValidatedInputProps> = ({
                                                                 label,
                                                                 placeholder,
@@ -31,7 +37,7 @@ export const ValidatedInput: React.FC<ValidatedInputProps> = ({
     const sanitized = SecurityUtils.sanitizeInput(text);
 
     // Validate based on type
-    let validation = { isValid: true, message: undefined };
+    let validation: ValidationResult = { isValid: true };
 
     if (required && !sanitized.trim()) {
       validation = { isValid: false, message: `${label || 'Field'} is required` };
@@ -67,3 +73,4 @@ export const ValidatedInput: React.FC<ValidatedInputProps> = ({
     />
   );
 };
+

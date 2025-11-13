@@ -1,7 +1,7 @@
 // src/components/AppInitializer.tsx
 import React, { useEffect } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { useLocation } from '../hooks/useLocation';
+import { useAuth } from '@/hooks/useAuth';
+import { useLocation } from '@/hooks/useLocation';
 
 interface AppInitializerProps {
   children: React.ReactNode;
