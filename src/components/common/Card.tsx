@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 
 type PaddingSize = 'none' | 'small' | 'medium' | 'large';
 
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
   padding?: PaddingSize;
   testID?: string;
   accessibilityLabel?: string;
@@ -52,3 +52,4 @@ const styles = StyleSheet.create({
 });
 
 export default Card;
+

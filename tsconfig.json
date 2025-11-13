@@ -5,7 +5,7 @@
     "lib": ["ES2021"],
     "jsx": "react-native",
     "allowJs": false,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,

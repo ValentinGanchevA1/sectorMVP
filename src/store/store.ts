@@ -1,3 +1,4 @@
+// src/store/store.ts - UPDATED VERSION
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -5,26 +6,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import authSlice from './slices/authSlice';
 import locationSlice from './slices/locationSlice';
 import userSlice from './slices/userSlice';
-import mapSlice from './slices/mapSlice';
+import mapSlice from './slices/mapSlice'; // ADDED: Import mapSlice
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['auth', 'user'],
+  whitelist: ['auth', 'user'], // Don't persist map and location data
 };
 
 const rootReducer = combineReducers({
   auth: authSlice,
   location: locationSlice,
   user: userSlice,
-  map: mapSlice,
+  map: mapSlice, // ADDED: Include mapSlice
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-reducer: persistedReducer,
-middleware: (getDefaultMiddleware) =>
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [

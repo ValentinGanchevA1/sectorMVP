@@ -5,8 +5,8 @@ export class SecurityUtils {
   // Sanitize user input to prevent XSS
   static sanitizeInput(input: string): string {
     return input
-      .replace(/[<>]/g, '') // Remove HTML tags
-      .replace(/javascript:/gi, '') // Remove javascript: protocol
+      .replaceAll(/[<>]/g, '') // Remove HTML tags
+      .replaceAll(/javascript:/gi, '') // Remove javascript: protocol
       .trim();
   }
 

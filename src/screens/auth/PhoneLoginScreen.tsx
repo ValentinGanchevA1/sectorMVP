@@ -28,7 +28,8 @@ export const PhoneLoginScreen: React.FC = () => {
 
   const isValidPhoneNumber = (phone: string): boolean => {
     const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-    return phoneRegex.test(phone.replace(/\s+/g, ''));
+    const normalized = phone.replace(/\s+/g, '');
+    return phoneRegex.test(normalized);
   };
 
   const handleSendCode = async () => {
@@ -43,8 +44,8 @@ export const PhoneLoginScreen: React.FC = () => {
     try {
       await dispatch(sendVerificationCode(phoneNumber)).unwrap();
       navigation.navigate('Verification', { phoneNumber });
-    } catch (error) {
-      Alert.alert('Error', error as string);
+    } catch (error_) {
+      Alert.alert('Error', error_ as string);
     }
   };
 

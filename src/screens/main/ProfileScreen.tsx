@@ -7,7 +7,7 @@ import { Button } from '@/components/common/Button';
 
 const ProfileScreen: React.FC = () => {
   const dispatch = useAppDispatch();
-  const user = useAppSelector(state => state.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -45,7 +45,7 @@ const ProfileScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f8f9fa'
   },
   container: {
     flex: 1,
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 30,
-    color: '#333',
+    color: '#333'
   },
   userInfo: {
     alignItems: 'center',
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   phoneText: {
     fontSize: 16,
     color: '#6c757d',
-    marginBottom: 12,
+    marginBottom: 12
   },
   bioText: {
     fontSize: 14,

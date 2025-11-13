@@ -4,15 +4,22 @@ import { AuthState, User, LoginCredentials, AuthResponse } from '@/types';
 import { authService } from '@/services/authService';
 
 const initialState: AuthState = {
-isAuthenticated: false,
-user: null,
-token: null,
-loading: false,
-error: null,
+  isAuthenticated: false,
+  user: null,
+  token: null,
+  loading: false,
+  error: null,
 };
 
-const handleAsyncError = (error: any): string => {
-  return error.response?.data?.message || error.message || 'An unexpected error occurred';
+// Enhanced error handling helper
+const handleAsyncError = (error: any) => {
+  if (error.response?.data?.message) {
+    return error.response.data.message;
+  }
+  if (error.message) {
+    return error.message;
+  }
+  return 'An unexpected error occurred';
 };
 
 // Send verification code
@@ -41,6 +48,7 @@ export const loginWithPhone = createAsyncThunk(
   }
 );
 
+// ADDED: Signup thunk for consistency
 export const signupUser = createAsyncThunk(
   'auth/signupUser',
   async (userData: { phoneNumber: string; displayName: string; dateOfBirth: Date }, { rejectWithValue }) => {
@@ -84,6 +92,7 @@ const authSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
     },
+    // ADDED: Reset auth state
     resetAuthState: () => initialState,
   },
   extraReducers: (builder) => {

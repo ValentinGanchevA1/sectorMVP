@@ -6,18 +6,14 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import {
-  loginWithPhone,
-  sendVerificationCode,
-  clearError,
-} from '@/store/slices/authSlice';
+import { loginWithPhone, sendVerificationCode, clearError } from '@/store/slices/authSlice';
 import {
   AuthStackNavigationProp,
   AuthStackRouteProp,
@@ -31,7 +27,7 @@ export const VerificationScreen: React.FC = () => {
   const [isResending, setIsResending] = useState(false);
 
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const { loading } = useAppSelector((state) => state.auth);
 
   const navigation = useNavigation<AuthStackNavigationProp<'Verification'>>();
   const route = useRoute<AuthStackRouteProp<'Verification'>>();
@@ -64,8 +60,8 @@ export const VerificationScreen: React.FC = () => {
         navigation.navigate('ProfileSetup');
       }
       // If not a new user, the RootNavigator will handle the switch to the Main stack.
-    } catch (rejectedValue) {
-      Alert.alert('Verification Failed', rejectedValue as string);
+    } catch (error_) {
+      Alert.alert('Verification Failed', error_ as string);
     }
   };
 
@@ -75,8 +71,8 @@ export const VerificationScreen: React.FC = () => {
       await dispatch(sendVerificationCode(phoneNumber)).unwrap();
       setTimer(60);
       Alert.alert('Code Sent', 'A new verification code has been sent.');
-    } catch (rejectedValue) {
-      Alert.alert('Error', rejectedValue as string);
+    } catch (error_) {
+      Alert.alert('Error', error_ as string);
     } finally {
       setIsResending(false);
     }
@@ -117,7 +113,7 @@ export const VerificationScreen: React.FC = () => {
               <Text
                 style={[
                   styles.resendText,
-                  (timer > 0 || loading) && styles.resendTextDisabled,
+                  (timer > 0 || loading) ? styles.resendTextDisabled : undefined,
                 ]}
               >
                 {timer > 0 ? `Resend code in ${timer}s` : 'Resend code'}

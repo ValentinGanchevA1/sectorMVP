@@ -26,15 +26,21 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({ value, onSelect, style
       maxHeight: 1024,
     };
 
+    // Use the callback form but guard with optional chaining and a local `uri` variable
     launchImageLibrary(options, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.errorCode) {
         Alert.alert('Error', response.errorMessage || 'Could not select image.');
-      } else if (response.assets && response.assets[0].uri) {
-        onSelect(response.assets[0].uri);
+      } else {
+        const uri = response.assets?.[0]?.uri;
+        if (uri) {
+          onSelect(uri);
+        } else {
+          onSelect(null);
+        }
       }
-    }).then(r => console.log(r) );
+    });
   };
 
   return (

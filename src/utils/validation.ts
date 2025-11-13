@@ -1,7 +1,7 @@
 // src/utils/validation.ts - CREATE THIS FILE
 export class ValidationUtils {
   static validatePhoneNumber(phone: string): { isValid: boolean; message?: string } {
-    const cleaned = phone.replace(/\s+/g, '');
+    const cleaned = phone.replaceAll(/\s+/g, '');
 
     // Check if it starts with +
     if (!cleaned.startsWith('+')) {

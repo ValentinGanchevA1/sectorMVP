@@ -47,7 +47,7 @@ const requestIOSLocationPermission = async (): Promise<LocationPermission> => {
         'Please enable location access in Settings',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Settings', onPress: () => Linking.openSettings() },
+          { text: 'Settings', onPress: () => { Linking.openSettings().catch(() => {}); } },
         ]
       );
     }

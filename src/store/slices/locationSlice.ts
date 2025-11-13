@@ -59,7 +59,11 @@ export const fetchNearbyUsers = createAsyncThunk<
 );
 
 // REFACTOR: Clarified the purpose of this thunk is to initiate the watch process.
-export const startLocationTracking = createAsyncThunk<void, void, { dispatch: Function }>(
+export const startLocationTracking = createAsyncThunk<
+  void,
+  void,
+  LocationThunkConfig
+>(
   'location/startLocationTracking',
   async (_, { dispatch, rejectWithValue }) => {
     try {
@@ -70,7 +74,7 @@ export const startLocationTracking = createAsyncThunk<void, void, { dispatch: Fu
         dispatch(updateLocationOnServer(location));
       });
     } catch (error: any) {
-      return rejectWithValue('Could not start location tracking.');
+      return rejectWithValue(error?.message || 'Could not start location tracking.');
     }
   },
 );
@@ -134,7 +138,6 @@ const locationSlice = createSlice({
 
 export const {
   updateCurrentLocation,
-  clearLocationError,
 } = locationSlice.actions;
 
 export default locationSlice.reducer;
